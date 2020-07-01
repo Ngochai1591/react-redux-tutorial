@@ -4,7 +4,7 @@ import "./App.css";
 import ColorPicker from './components/ColorPicker';
 import SizeSettings from './components/SizeSettings';
 import Result from './components/Result';
-
+import Reset from './components/Reset';
 class App extends Component {
 
     constructor(props){
@@ -13,6 +13,14 @@ class App extends Component {
             color: 'red',
             fontSize: 15
         }
+    }
+
+    onSetReset = (color, fontSize) =>{
+        console.log("RESETING")
+        this.setState({
+            color: color,
+            fontSize: fontSize
+        });
     }
 
     onSetColor = (color) =>{
@@ -35,11 +43,12 @@ class App extends Component {
                 <div className="row">
                    <ColorPicker 
                                 color={this.state.color} 
-                                fontSize={this.state.fontSize}
                                 onReceiveColor={this.onSetColor}/>
 
-                   <SizeSettings onReceiveSize={this.onSetSize}/>
+                   <SizeSettings    fontSize={this.state.fontSize}
+                                    onReceiveSize={this.onSetSize}/>
                     
+                    <Reset onReceiveReset={this.onSetReset}/>
                     <Result 
                             color={this.state.color}
                             fontSize={this.state.fontSize}/>

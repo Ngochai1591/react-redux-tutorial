@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 
-import Reset from './Reset';
 
 class SizeSettings extends Component{
 
@@ -10,13 +9,26 @@ class SizeSettings extends Component{
             fontSize: 15
         }
     }
+
+    componentWillReceiveProps = (nextProps) =>{
+        console.log("RECEIVE PROPS")
+        if(nextProps.fontSize !== this.props.fontSize){
+            this.setState({
+                fontSize: nextProps.fontSize
+            }, ()=>{
+                console.log(this.state)
+            })
+        }
+    }
     increaseSize = (size) =>{
         if(size<35){
             this.setState({
                 fontSize: size+2
+            }, ()=>{
+                console.log(this.state.fontSize)
+                this.props.onReceiveSize(this.state.fontSize)
             })
-            console.log(this.state.fontSize)
-            this.props.onReceiveSize(this.state.fontSize)
+            
         }
         else{
             console.log("cannot increase more")
@@ -29,9 +41,11 @@ class SizeSettings extends Component{
             console.log(newSize)
             this.setState({
                 fontSize: newSize
+            }, ()=>{
+                console.log(this.state.fontSize)
+                this.props.onReceiveSize(this.state.fontSize)
             })
-            console.log(this.state.fontSize)
-            this.props.onReceiveSize(this.state.fontSize)
+            
         }
         else{
             console.log("cannot decrease more")
@@ -57,7 +71,6 @@ class SizeSettings extends Component{
                                 onClick={()=>{this.increaseSize(this.state.fontSize)}}>Tăng</button>
                     </div>
                 </div>
-                <Reset/>
             </div>
             
         );
