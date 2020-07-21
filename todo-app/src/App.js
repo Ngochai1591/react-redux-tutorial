@@ -11,6 +11,12 @@ class App extends Component {
         this.state = {
             tasks: [],
             isDisplayForm: false,
+            taskEditing: null,
+            filter : {
+                name: '',
+                status: -1
+            },
+            keyword: ''
 
         }
     }
@@ -27,9 +33,7 @@ class App extends Component {
             console.log(tasks)
             this.setState({
                 tasks : tasks
-            }, ()=>[
-                console.log(this.state)
-            ])
+            })
         }
      
     };
@@ -63,6 +67,16 @@ class App extends Component {
                 id: this.generateID(),
                 name: "Ngủ",
                 status: true
+            },
+            {
+                id: this.generateID(),
+                name: "Học Reactjs",
+                status: true
+            },
+            {
+                id: this.generateID(),
+                name: "Học React-Redux",
+                status: false
             }
         ];
         this.setState({
@@ -72,32 +86,67 @@ class App extends Component {
         localStorage.setItem('tasks',JSON.stringify(tasks))
     }
 
+ 
+
     onToggleForm = () =>{
-        this.setState({
-            isDisplayForm : !this.state.isDisplayForm
-        })
+        if(this.state.isDisplayForm && this.state.taskEditing){
+            this.setState({
+                isDisplayForm : true,
+                taskEditing: null
+            })
+        }
+        else{
+            this.setState({
+                isDisplayForm : !this.state.isDisplayForm,
+                taskEditing: null
+            });
+        }
+        
     }
     
     onCloseForm = () =>{
         this.setState({
-            isDisplayForm: false
+            isDisplayForm: false,
+
         })
     }
 
-    onSubmit = (data) =>{
-
-        var task = {
-            id: this.generateID(),
-            name: data.name,
-            status: data.status === "true" ? true : false
-        }
-
-        var {tasks} = this.state;
-        tasks.push(task)
+    onShowForm = () =>{
         this.setState({
-            tasks
+            isDisplayForm: true
         })
-        localStorage.setItem('tasks', JSON.stringify(this.state.tasks))
+    }
+    onSubmit = (data) =>{
+        var {tasks} = this.state;
+        if(data.id === ''){
+            var task = {
+                id: this.generateID(),
+                name: data.name,
+                status: JSON.parse(data.status)
+            }
+            
+            tasks.push(task);
+            this.setState({
+                tasks
+            });
+        }
+        else{
+            tasks.map((task)=>{
+                if(task.id === data.id){
+                    task.name = data.name;
+                    task.status = data.status;
+                    console.log(task)
+                }
+    
+                return "DONE"
+            });
+            this.setState({
+                tasks: tasks,
+                taskEditing: null
+            });
+        }
+        localStorage.setItem('tasks', JSON.stringify(this.state.tasks));
+       
     }
 
     onUpdateStatus = (id) =>{
@@ -109,22 +158,88 @@ class App extends Component {
                 task.status = !task.status
             }
         });
-
+        //Update State
         this.setState({
             tasks
         })
-
+        //Set LocalStorage
         localStorage.setItem('tasks', JSON.stringify(tasks))
+    }
 
+    onDelete = (id) =>{
+        var {tasks} = this.state;
+        var newTasks = tasks.filter((task)=>{
+            return task.id !== id;
+        });
+        //Update State
+        this.setState({
+            tasks : newTasks
+        })
+        //Set LocalStorage
+        localStorage.setItem('tasks', JSON.stringify(newTasks));
+    }
+
+    onUpdate = (id) =>{
+        var {tasks} = this.state;
+        var taskEdit = tasks.filter((task)=>{
+            return task.id === id
+        })
+        //Update State
+        this.setState({
+            taskEditing: taskEdit
+        })
+        //Show form
+        this.onShowForm()
+    }
+
+    onFilter = (filterName, filterStatus) =>{
+        console.log(filterName, "-", filterStatus);
+        filterStatus = JSON.parse(filterStatus);
+        this.setState({
+            filter:{
+                name: filterName.toLowerCase(),
+                status: filterStatus
+            }
+        })
+    }
+
+    onSearch = (keyword) =>{
+        this.setState({
+            keyword: keyword.toLowerCase()
+        });
     }
     
 
      render() {
-        var {tasks, isDisplayForm} = this.state;
+        var {tasks, isDisplayForm, taskEditing, filter, keyword} = this.state;
+        if(filter){
+            if(filter.name){
+                tasks = tasks.filter((task)=>{
+                    return task.name.toLowerCase().indexOf(filter.name) !== -1;
+                });
+            }
+            if(filter.status !== -1){
+                tasks = tasks.filter((task)=>{
+                    if(filter.status === 1){
+                        return JSON.parse(task.status) === true;
+                    }
+                    else{
+                        return JSON.parse(task.status)  === false;
+                    }
+                })
+                console.log(tasks)
+            }
+        }
+        if(keyword){
+            tasks = tasks.filter((task)=>{
+                return task.name.toLowerCase().indexOf(keyword) !== -1;
+            })
+        }
         var elementTaskForm = isDisplayForm === true?  
                 <TaskForm 
                         onCloseForm={this.onCloseForm}
-                        onSubmit={this.onSubmit}/> : 
+                        onSubmit={this.onSubmit}
+                        task={taskEditing}/> : 
                 ''; 
         return (
             <div className="container">
@@ -153,17 +268,21 @@ class App extends Component {
                             type="button" 
                             className="btn btn-danger"
                             onClick={this.onGenerateData}>
-                            Hello world
+                            Generate Data
                         </button>
                         {/* Control */}
-                        <Control />
+                        <Control onSearch={this.onSearch}/>
 
                         <div className="row mt-15">
                             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 {/* TaskList */}
                                 <TaskList 
                                     tasks={tasks}
-                                    onUpdateStatus={this.onUpdateStatus}/>
+                                    onUpdateStatus={this.onUpdateStatus}
+                                    onDelete={this.onDelete}
+                                    onUpdate={this.onUpdate}
+                                    onFilter={this.onFilter}
+                                />
                             </div>
                         </div>
                     </div>

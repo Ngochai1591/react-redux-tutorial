@@ -4,8 +4,45 @@ class TaskForm extends Component{
     constructor(props){
         super(props);
         this.state = {
+            id: '',
             name: '',
             status: false,
+        }
+    }
+    
+
+    componentWillMount = () =>{
+        console.log("RECEIVING PROPS");
+        if(this.props.task){
+            var task = this.props.task[0];
+            console.log(task)
+            this.setState({
+                id: task.id,
+                name: task.name,
+                status: task.status
+            })
+        }
+        console.log("UPDATING")
+        console.log(this.state)
+    }
+
+    componentWillReceiveProps = (nextProps) =>{
+        console.log(nextProps.task)
+        if(nextProps && nextProps.task){
+            this.setState({
+                id: nextProps.task[0].id,
+                name: nextProps.task[0].name,
+                status: JSON.parse(nextProps.task[0].status)
+            });
+        }
+        else{
+            if(nextProps && !nextProps.task){
+                this.setState({
+                    id: '',
+                    name: '',
+                    status: false
+                })
+            }
         }
     }
 
@@ -37,11 +74,13 @@ class TaskForm extends Component{
         this.onCloseForm();
     }
     render(){
+        var {id} = this.state
         return(
             <div>
                 <div className="panel panel-warning">
                     <div className="panel-heading">
-                        <h3 className="panel-title">Thêm Công Việc
+                        <h3 className="panel-title">
+                            {id === ''? "Thêm Công Việc": "Cập nhật công việc"}
                         <span   className="fa fa-times-circle text-right"
                             onClick={this.onCloseForm}>
                         </span>
@@ -72,7 +111,7 @@ class TaskForm extends Component{
                             </select>
                             <br/>
                             <div className="text-center">
-                                <button type="submit" className="btn btn-warning">Thêm</button>&nbsp;
+                                <button type="submit" className="btn btn-warning">{id === '' ? "Thêm" : "Lưu Lại"}</button>&nbsp;
                                 <button 
                                     type="button" 
                                     className="btn btn-danger"
