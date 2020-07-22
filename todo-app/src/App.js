@@ -16,7 +16,11 @@ class App extends Component {
                 name: '',
                 status: -1
             },
-            keyword: ''
+            keyword: '',
+            sort: {
+                by: 'name',
+                value: 1
+            }
 
         }
     }
@@ -208,10 +212,20 @@ class App extends Component {
             keyword: keyword.toLowerCase()
         });
     }
+
+    onSort = (sort) =>{
+        console.log(sort);
+        this.setState({
+            sort:{
+                by: sort.by,
+                value: sort.value
+            }
+        })
+    }
     
 
      render() {
-        var {tasks, isDisplayForm, taskEditing, filter, keyword} = this.state;
+        var {tasks, isDisplayForm, taskEditing, filter, keyword, sort} = this.state;
         if(filter){
             if(filter.name){
                 tasks = tasks.filter((task)=>{
@@ -230,10 +244,39 @@ class App extends Component {
                 console.log(tasks)
             }
         }
+
         if(keyword){
             tasks = tasks.filter((task)=>{
                 return task.name.toLowerCase().indexOf(keyword) !== -1;
             })
+        }
+        
+        if(sort.by === 'name'){
+            tasks.sort((a,b) =>{
+                if(a.name > b.name){
+                    return sort.value;
+                }
+                else if(a.name < b.name){
+                    return -sort.value;
+                }
+                else{
+                    return 0;
+                }
+            })
+        }
+        else{
+            tasks.sort((a,b)=>{
+                if(a.status > b.status){
+                    return -sort.value;
+                }
+                else if(a.status < b.status){
+                    return sort.value;
+                }
+                else{
+                    return 0;
+                }
+            })
+
         }
         var elementTaskForm = isDisplayForm === true?  
                 <TaskForm 
@@ -271,7 +314,9 @@ class App extends Component {
                             Generate Data
                         </button>
                         {/* Control */}
-                        <Control onSearch={this.onSearch}/>
+                        <Control 
+                            onSearch={this.onSearch}
+                            onSort={this.onSort}/>
 
                         <div className="row mt-15">
                             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
