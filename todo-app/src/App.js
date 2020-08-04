@@ -3,13 +3,12 @@ import "./App.css";
 import TaskForm from './components/TaskForm/TaskForm';
 import Control from './components/Control/Control';
 import TaskList from './components/TaskList/TaskList';
-import demo from './training/demo';
+// import demo from './training/demo';
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tasks: [],
             isDisplayForm: false,
             taskEditing: null,
             filter : {
@@ -26,34 +25,6 @@ class App extends Component {
     }
 
 
-    s4 = () =>{
-        return Math.floor((1+Math.random()) * 0x10000).toString(16).substring(1);
-    };
-
-    componentWillMount = () => {
-        console.log("MOUNTING");
-        if(localStorage && localStorage.getItem('tasks')){
-            var tasks = JSON.parse(localStorage.getItem('tasks'))
-            console.log(tasks)
-            this.setState({
-                tasks : tasks
-            })
-        }
-     
-    };
-
-    generateID = () =>{
-        return  this.s4() + '-' +  
-                this.s4() + '-' +  
-                this.s4() + '-' +  
-                this.s4() + '-' +  
-                this.s4() + '-' +  
-                this.s4() + '-' +  
-                this.s4() + '-' +
-                this.s4() + '-' + 
-                this.s4() + '-' + 
-                this.s4();
-    }
 
     onGenerateData = () =>{
         var tasks = [
@@ -225,59 +196,65 @@ class App extends Component {
     
 
      render() {
-        var {tasks, isDisplayForm, taskEditing, filter, keyword, sort} = this.state;
-        if(filter){
-            if(filter.name){
-                tasks = tasks.filter((task)=>{
-                    return task.name.toLowerCase().indexOf(filter.name) !== -1;
-                });
-            }
-            if(filter.status !== -1){
-                tasks = tasks.filter((task)=>{
-                    if(filter.status === 1){
-                        return JSON.parse(task.status) === true;
-                    }
-                    else{
-                        return JSON.parse(task.status)  === false;
-                    }
-                })
-                console.log(tasks)
-            }
-        }
+        var {
+            isDisplayForm, 
+            taskEditing, 
+            //filter, 
+            //keyword, 
+            //sort
+        } = this.state;
+        // if(filter){
+        //     if(filter.name){
+        //         tasks = tasks.filter((task)=>{
+        //             return task.name.toLowerCase().indexOf(filter.name) !== -1;
+        //         });
+        //     }
+        //     if(filter.status !== -1){
+        //         tasks = tasks.filter((task)=>{
+        //             if(filter.status === 1){
+        //                 return JSON.parse(task.status) === true;
+        //             }
+        //             else{
+        //                 return JSON.parse(task.status)  === false;
+        //             }
+        //         })
+        //         console.log(tasks)
+        //     }
+        // }
 
-        if(keyword){
-            tasks = tasks.filter((task)=>{
-                return task.name.toLowerCase().indexOf(keyword) !== -1;
-            })
-        }
+        // if(keyword){
+        //     tasks = tasks.filter((task)=>{
+        //         return task.name.toLowerCase().indexOf(keyword) !== -1;
+        //     })
+        // }
         
-        if(sort.by === 'name'){
-            tasks.sort((a,b) =>{
-                if(a.name > b.name){
-                    return sort.value;
-                }
-                else if(a.name < b.name){
-                    return -sort.value;
-                }
-                else{
-                    return 0;
-                }
-            })
-        }
-        else{
-            tasks.sort((a,b)=>{
-                if(a.status > b.status){
-                    return -sort.value;
-                }
-                else if(a.status < b.status){
-                    return sort.value;
-                }
-                else{
-                    return 0;
-                }
-            })
+        // if(sort.by === 'name'){
+        //     tasks.sort((a,b) =>{
+        //         if(a.name > b.name){
+        //             return sort.value;
+        //         }
+        //         else if(a.name < b.name){
+        //             return -sort.value;
+        //         }
+        //         else{
+        //             return 0;
+        //         }
+        //     })
+        // }
+        // else{
+        //     tasks.sort((a,b)=>{
+        //         if(a.status > b.status){
+        //             return -sort.value;
+        //         }
+        //         else if(a.status < b.status){
+        //             return sort.value;
+        //         }
+        //         else{
+        //             return 0;
+        //         }
+        //     })
 
-        }
+        // }
         var elementTaskForm = isDisplayForm === true?  
                 <TaskForm 
                         onCloseForm={this.onCloseForm}
@@ -322,7 +299,6 @@ class App extends Component {
                             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 {/* TaskList */}
                                 <TaskList 
-                                    tasks={tasks}
                                     onUpdateStatus={this.onUpdateStatus}
                                     onDelete={this.onDelete}
                                     onUpdate={this.onUpdate}
