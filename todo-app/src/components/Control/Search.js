@@ -8,6 +8,7 @@ class Search extends Component{
         }
     }
     onChange = (event) =>{
+        console.log("HELLO")
         var target = event.target;
         var name = target.name;
         var value = target.value;
